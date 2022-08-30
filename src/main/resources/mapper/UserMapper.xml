@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.phoenix.littlelife.repository.mapper.UserMapper">
+
+    <resultMap id="BaseResultMap" type="com.phoenix.littlelife.repository.entity.User">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="wechatId" column="wechat_id" jdbcType="BIGINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,wechat_id,create_time
+    </sql>
+</mapper>
