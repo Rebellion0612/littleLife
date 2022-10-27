@@ -16,7 +16,7 @@ public class IdUtils {
 
     public static Long nextId() {
         if (LOCK.tryLock()) {
-            tmp += RandomUtil.randomLong(10);
+            tmp += RandomUtil.randomLong(10) + 1;
             LOCK.unlock();
             return tmp;
         } else {

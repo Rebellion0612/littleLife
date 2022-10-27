@@ -27,4 +27,9 @@ public class BillParam {
      */
     private Long groupId;
 
+    /**
+     * 家庭号id
+     */
+    private Long familyId;
+
 }

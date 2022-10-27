@@ -17,7 +17,7 @@ public class LittleException extends RuntimeException {
 
     public LittleException(String message) {
         this.message = message;
-        this.code = ErrorCodes.FAIL.getCode();
+        this.code = ErrorCodes.NO_CODE.getCode();
     }
 
     public LittleException(Integer code, String message) {

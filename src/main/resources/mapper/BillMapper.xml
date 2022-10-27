@@ -17,6 +17,6 @@
     <sql id="Base_Column_List">
         id,amount,user_id,
         group_id,type,create_time,
-        update_time
+        update_time,family_id
     </sql>
 </mapper>

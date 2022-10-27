@@ -8,6 +8,7 @@ class LittleLifeApplicationTests {
 
     @Test
     void contextLoads() {
+
     }
 
 }

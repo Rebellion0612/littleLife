@@ -52,6 +52,11 @@ public class Bill implements Serializable {
      */
     private LocalDateTime updateTime;
 
+    /**
+     * 家庭号id
+     */
+    private Long familyId;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 

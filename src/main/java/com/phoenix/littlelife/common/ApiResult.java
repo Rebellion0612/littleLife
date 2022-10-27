@@ -25,6 +25,10 @@ public class ApiResult<T> {
         this.message = message;
     }
 
+    public static <E> ApiResult<E> success() {
+        return success(null);
+    }
+
     public static <E> ApiResult<E> success(E data) {
         return new ApiResult<>(data, SUCCESS.getCode(), SUCCESS.getMessage());
     }

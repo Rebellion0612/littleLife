@@ -36,6 +36,9 @@ public class GlobalExceptionHandler {
         if (ErrorCodes.FAIL.getCode().equals(e.getCode())) {
             return ApiResult.fail(ErrorCodes.FAIL);
         }
+        if (ErrorCodes.NO_CODE.getCode().equals(e.getCode())) {
+            return ApiResult.fail(e.getMessage());
+        }
         log.warn("LittleException:", e);
         return ApiResult.fail(ErrorCodes.getErrorCode(e.getCode()));
     }

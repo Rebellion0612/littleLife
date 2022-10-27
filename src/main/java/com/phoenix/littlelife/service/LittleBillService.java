@@ -1,6 +1,7 @@
 package com.phoenix.littlelife.service;
 
 import com.phoenix.littlelife.data.param.BillParam;
+import com.phoenix.littlelife.data.param.FamilyParam;
 import com.phoenix.littlelife.data.param.TagParam;
 import com.phoenix.littlelife.data.vo.BillGroupVo;
 
@@ -33,5 +34,18 @@ public interface LittleBillService {
      */
     List<BillGroupVo> queryBillGroup();
 
+    /**
+     * 创建家庭
+     *
+     * @param param 家庭参数
+     */
+    void createFamily(FamilyParam param);
+
+    /**
+     * 加入家庭
+     *
+     * @param param
+     */
+    void joinFamily(FamilyParam param);
 
 }
