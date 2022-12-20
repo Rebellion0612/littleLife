@@ -4,29 +4,27 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.phoenix.littlelife.common.LittleException;
 import com.phoenix.littlelife.common.UserContextHolder;
 import com.phoenix.littlelife.data.param.BillParam;
+import com.phoenix.littlelife.data.param.EventParam;
 import com.phoenix.littlelife.data.param.FamilyParam;
 import com.phoenix.littlelife.data.param.TagParam;
 import com.phoenix.littlelife.data.vo.BillGroupVo;
-import com.phoenix.littlelife.repository.entity.BillGroup;
-import com.phoenix.littlelife.repository.entity.BillTag;
-import com.phoenix.littlelife.repository.entity.Family;
-import com.phoenix.littlelife.repository.entity.FamilyUserRelation;
-import com.phoenix.littlelife.repository.mapper.BillGroupMapper;
-import com.phoenix.littlelife.repository.mapper.BillTagMapper;
-import com.phoenix.littlelife.repository.mapper.FamilyMapper;
-import com.phoenix.littlelife.repository.mapper.FamilyUserRelationMapper;
+import com.phoenix.littlelife.repository.entity.*;
+import com.phoenix.littlelife.repository.entity.Event;
+import com.phoenix.littlelife.repository.mapper.*;
+import com.phoenix.littlelife.repository.service.FamilyService;
 import com.phoenix.littlelife.service.LittleBillService;
 import com.phoenix.littlelife.utils.AesUtil;
 import com.phoenix.littlelife.utils.IdUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.phoenix.littlelife.enums.ErrorCodes.TAG_REPEAT;
@@ -46,7 +44,14 @@ public class LittleBillServiceImpl implements LittleBillService {
 
     private final FamilyMapper familyMapper;
 
+    private final FamilyService familyService;
+
     private final FamilyUserRelationMapper familyUserRelationMapper;
+
+    private final EventMapper eventMapper;
+
+    private final EventUserRelationMapper eventUserRelationMapper;
+
 
     @Override
     public void createTag(TagParam param) {
@@ -81,6 +86,7 @@ public class LittleBillServiceImpl implements LittleBillService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void createFamily(FamilyParam param) {
 
         Family family = new Family();
@@ -93,10 +99,13 @@ public class LittleBillServiceImpl implements LittleBillService {
         //用户和家庭号绑定
         List<FamilyUserRelation> list = new ArrayList<>();
         param.getUserIds().forEach(v -> {
-            list.add(new FamilyUserRelation(IdUtils.nextId(), family.getId(), v));
+            list.add(new FamilyUserRelation(IdUtils.nextId(), family.getId(), v, LocalDateTime.now()));
         });
         familyUserRelationMapper.insertFamilyUserRelation(list);
+
+
     }
+
 
     @Override
     public void joinFamily(FamilyParam param) {
@@ -113,19 +122,8 @@ public class LittleBillServiceImpl implements LittleBillService {
                 .in(FamilyUserRelation::getUserId, param.getUserIds()));
         HashSet<Long> idSet = relationList.stream().map(FamilyUserRelation::getUserId).collect(Collectors.toCollection(HashSet::new));
         param.getUserIds().stream().filter(v -> !idSet.contains(v))
-                .forEach(v -> list.add(new FamilyUserRelation(IdUtils.nextId(), aimFamilyId, v)));
-//        param.getUserIds().forEach(v -> {
-//            FamilyUserRelation familyUserRelation = familyUserRelationMapper.selectOne(Wrappers.lambdaQuery(FamilyUserRelation.class)
-//                    .eq(FamilyUserRelation::getFamilyId, aimFamilyId).eq(FamilyUserRelation::getUserId, v)
-//            );
-//            if (Objects.nonNull(familyUserRelation)) {
-//                existsIdList.add(v);
-////                throw new LittleException("已经加入该家庭");
-//            } else {
-//                //添加历史未加入目标家庭的帐号
-//                list.add(new FamilyUserRelation(IdUtils.nextId(), aimFamilyId, v));
-//            }
-//        });
+                .forEach(v -> list.add(new FamilyUserRelation(IdUtils.nextId(), aimFamilyId, v, LocalDateTime.now())));
+
         //用户和家庭号绑定
         if (list.size() != 0) {
             familyUserRelationMapper.insertFamilyUserRelation(list);
@@ -133,5 +131,47 @@ public class LittleBillServiceImpl implements LittleBillService {
         if (idSet.size() != 0) {
             throw new LittleException(idSet + "已经加入该家庭");
         }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void createEvent(EventParam param) {
+        Long userId = UserContextHolder.getUserId();
+        //todo 事件开始时间转换 序列化
+        String formatDateTime = "yyyy-MM-dd HH:mm:ss";
+        DateTimeFormatter df = DateTimeFormatter.ofPattern(formatDateTime);
+        LocalDateTime localDateTime = LocalDateTime.parse(param.getStartTime(), df);
+
+        //填充事件属性
+        Event event = Event.builder()
+                .name(param.getName())
+                .startTime(localDateTime)
+                .advanceNoticeDays(param.getAdvanceNoticeDays())
+                //计算事件提醒时间
+                .noticeTime(localDateTime.plusDays(-param.getAdvanceNoticeDays()))
+                .eventType(param.getEventType())
+                .build();
+        //todo 计算事件提醒时间：提醒日期不能小于当前时间
+
+
+        //如果是周期性事件，计算下次发生时间
+        if (param.getEventType() == 1) {
+            //下次发生时间：开始时间+周期
+            event.setCycleDuration(param.getCycleDuration());
+            event.setNextTime(event.getStartTime().plusDays(event.getCycleDuration()));
+
+        }
+        event.setCreateTime(LocalDateTime.now());
+        eventMapper.insert(event);
+        //事件和用户绑定
+        EventUserRelation eventUserRelation = EventUserRelation.builder()
+                .id(IdUtils.nextId())
+                .eventId(event.getId())
+                .userId(userId)
+                .createTime(LocalDateTime.now())
+                .build();
+        eventUserRelationMapper.insert(eventUserRelation);
+
+
     }
 }

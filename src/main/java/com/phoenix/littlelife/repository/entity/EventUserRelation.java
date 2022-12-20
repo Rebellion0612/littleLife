@@ -8,17 +8,17 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 /**
  * 
- * @TableName family_user_relation
+ * @TableName event_user_relation
  */
-@TableName(value ="family_user_relation")
+@TableName(value ="event_user_relation")
 @Data
-@AllArgsConstructor
-public class FamilyUserRelation implements Serializable {
+@Builder
+public class EventUserRelation implements Serializable {
     /**
      * 主键
      */
@@ -26,9 +26,9 @@ public class FamilyUserRelation implements Serializable {
     private Long id;
 
     /**
-     * 家庭号
+     * 事件id
      */
-    private Long familyId;
+    private Long eventId;
 
     /**
      * 用户id
@@ -36,11 +36,10 @@ public class FamilyUserRelation implements Serializable {
     private Long userId;
 
     /**
-     * 创建时间
+     * 事件创建时间
      */
     private LocalDateTime createTime;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
-
 }

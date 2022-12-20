@@ -7,3 +7,17 @@ spring:
     url: jdbc:mysql://120.53.249.35:3306/littleLife?characterEncoding=UTF-8
     username: root
     password: 123456
+
+
+xxl:
+  job:
+    admin:
+      addresses: http://127.0.0.1:8081/xxl-job-admin
+    accessToken: default_token
+    executor:
+      appname: xxl-job-littleLife
+      port: 9999
+      logretentiondays: 30
+      address:
+      logpath: /data/applogs/xxl-job/jobhandler
+      ip:

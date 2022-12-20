@@ -4,25 +4,28 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.phoenix.littlelife.repository.mapper.FamilyUserRelationMapper">
 
-    <!--    <resultMap id="BaseResultMap" type="com.phoenix.littlelife.repository.entity.FamilyUserRelation">-->
-    <!--            <id property="id" column="id" jdbcType="BIGINT"/>-->
-    <!--            <result property="familyId" column="family_id" jdbcType="BIGINT"/>-->
-    <!--            <result property="userIds" column="user_id" jdbcType="BIGINT"/>-->
-    <!--    </resultMap>-->
+    <resultMap id="BaseResultMap" type="com.phoenix.littlelife.repository.entity.FamilyUserRelation">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="familyId" column="family_id" jdbcType="BIGINT"/>
+        <result property="userId" column="user_id" jdbcType="BIGINT"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
 
     <sql id="Base_Column_List">
         id
-        ,family_id,user_id
+        ,family_id,user_id,
+        create_time
     </sql>
     <sql id="tableName">
         family_user_relation
     </sql>
     <insert id="insertFamilyUserRelation" parameterType="com.phoenix.littlelife.repository.entity.FamilyUserRelation">
-
-        insert into<include refid="tableName"/>(<include refid="Base_Column_List"/>)
+        insert into
+        <include refid="tableName"/>
+        (<include refid="Base_Column_List"/>)
         values
-        <foreach collection="param" item="item" separator="," >
-            (#{item.id},#{item.familyId},#{item.userId})
+        <foreach collection="param" item="item" separator=",">
+            (#{item.id},#{item.familyId},#{item.userId},#{item.createTime})
         </foreach>
     </insert>
 </mapper>

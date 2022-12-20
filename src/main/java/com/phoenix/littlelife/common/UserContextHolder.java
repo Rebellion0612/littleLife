@@ -1,5 +1,7 @@
 package com.phoenix.littlelife.common;
 
+import java.util.Objects;
+
 /**
  * @Author Phoenix Fly
  * @create 2022/7/3 15:42
@@ -13,7 +15,8 @@ public class UserContextHolder {
     }
 
     public static Long getUserId() {
-        return userLocal.get();
+        Long userId = userLocal.get();
+        return Objects.isNull(userId) ? -1 : userId;
     }
 
     public static void clear() {

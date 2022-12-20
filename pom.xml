@@ -8,6 +8,7 @@
         <version>2.7.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
     <groupId>com.phoenix</groupId>
     <artifactId>littleLife</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -56,6 +57,13 @@
             <artifactId>hutool-core</artifactId>
             <version>5.5.1</version>
         </dependency>
+        <!-- xxl-job-core -->
+        <dependency>
+            <groupId>com.xuxueli</groupId>
+            <artifactId>xxl-job-core</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+
     </dependencies>
 
     <build>

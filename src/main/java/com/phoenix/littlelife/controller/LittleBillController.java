@@ -3,6 +3,7 @@ package com.phoenix.littlelife.controller;
 import com.phoenix.littlelife.common.ApiResult;
 import com.phoenix.littlelife.constant.Urls;
 import com.phoenix.littlelife.data.param.BillParam;
+import com.phoenix.littlelife.data.param.EventParam;
 import com.phoenix.littlelife.data.param.FamilyParam;
 import com.phoenix.littlelife.data.param.TagParam;
 import com.phoenix.littlelife.data.vo.BillGroupVo;
@@ -62,6 +63,12 @@ public class LittleBillController {
     @PostMapping("/joinFamily")
     public ApiResult testJoinFamily(@RequestBody @Valid FamilyParam param) {
         littleBillService.joinFamily(param);
+        return ApiResult.success();
+    }
+
+    @PostMapping("/createEvent")
+    public ApiResult testEvent(@RequestBody @Valid EventParam param){
+        littleBillService.createEvent(param);
         return ApiResult.success();
     }
 }

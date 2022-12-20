@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.phoenix.littlelife.repository.mapper.EventMapper">
+
+    <resultMap id="BaseResultMap" type="com.phoenix.littlelife.repository.entity.Event">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="cycleDuration" column="cycle_duration" jdbcType="INTEGER"/>
+            <result property="startTime" column="start_time" jdbcType="TIMESTAMP"/>
+            <result property="nextTime" column="next_time" jdbcType="TIMESTAMP"/>
+            <result property="eventType" column="event_type" jdbcType="INTEGER"/>
+            <result property="advanceNoticeDays" column="advance_notice_days" jdbcType="INTEGER"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="noticeTime" column="notice_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,cycle_duration,
+        start_time,next_time,event_type,
+        advance_notice_days,create_time,notice_time
+    </sql>
+</mapper>
