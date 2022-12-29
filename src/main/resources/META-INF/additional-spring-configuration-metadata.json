@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "rocketmq.producer.topic",
+      "type": "java.lang.String",
+      "description": "Description for rocketmq.producer.topic."
+  }
+] }

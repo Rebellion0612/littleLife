@@ -31,12 +31,14 @@ public class EventParam {
     /**
      * 事件开始时间
      */
-    @NotBlank(message = "事件开始时间不可为空")
-    private String startTime;
+    @NotNull(message = "事件开始时间不可为空")
+    @JsonFormat(shape = JsonFormat.Shape.STRING ,pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime startTime;
 
     /**
      * 事件下次开始时间
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime nextTime;
 
     /**

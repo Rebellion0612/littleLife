@@ -21,3 +21,9 @@ xxl:
       address:
       logpath: /data/applogs/xxl-job/jobhandler
       ip:
+
+rocketmq:
+  name-server: 120.53.249.35:9876   # rocketMq 服务地址
+  producer:
+    group: my-group
+    send-message-timeout: 3000 # 发送消息超时时间，单位：毫秒。默认为 3000

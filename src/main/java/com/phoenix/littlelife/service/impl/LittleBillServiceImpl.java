@@ -20,9 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.*;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -137,40 +135,44 @@ public class LittleBillServiceImpl implements LittleBillService {
     @Transactional(rollbackFor = Exception.class)
     public void createEvent(EventParam param) {
         Long userId = UserContextHolder.getUserId();
-        //todo 事件开始时间转换 序列化
-        String formatDateTime = "yyyy-MM-dd HH:mm:ss";
-        DateTimeFormatter df = DateTimeFormatter.ofPattern(formatDateTime);
-        LocalDateTime localDateTime = LocalDateTime.parse(param.getStartTime(), df);
 
         //填充事件属性
         Event event = Event.builder()
                 .name(param.getName())
-                .startTime(localDateTime)
+                .startTime(param.getStartTime())
                 .advanceNoticeDays(param.getAdvanceNoticeDays())
-                //计算事件提醒时间
-                .noticeTime(localDateTime.plusDays(-param.getAdvanceNoticeDays()))
                 .eventType(param.getEventType())
                 .build();
-        //todo 计算事件提醒时间：提醒日期不能小于当前时间
-
-
-        //如果是周期性事件，计算下次发生时间
-        if (param.getEventType() == 1) {
-            //下次发生时间：开始时间+周期
-            event.setCycleDuration(param.getCycleDuration());
-            event.setNextTime(event.getStartTime().plusDays(event.getCycleDuration()));
+        //提醒日期
+        LocalDateTime noticeTime = param.getStartTime().plusDays(-param.getAdvanceNoticeDays());
+        //提醒日期不能小于当前时间
+        if (LocalDateTime.now().isAfter(noticeTime)) {
+            throw new LittleException("提醒日期不能小于当前时间");
+        } else {
+            event.setNoticeTime(noticeTime);
+            //如果是周期性事件，计算下次发生时间
+            if (param.getEventType() == 1) {
+                // 周期时长必须大于提前预约天数
+                if (param.getAdvanceNoticeDays() > param.getCycleDuration()) {
+                    throw new LittleException("周期时长不能小于提前预约天数");
+                } else {
+                    //下次发生时间：开始时间+周期
+                    event.setCycleDuration(param.getCycleDuration());
+                    event.setNextTime(event.getStartTime().plusDays(event.getCycleDuration()));
+                }
+            }
+            event.setCreateTime(LocalDateTime.now());
+            eventMapper.insert(event);
+            //事件和用户绑定
+            EventUserRelation eventUserRelation = EventUserRelation.builder()
+                    .id(IdUtils.nextId())
+                    .eventId(event.getId())
+                    .userId(userId)
+                    .createTime(LocalDateTime.now())
+                    .build();
+            eventUserRelationMapper.insert(eventUserRelation);
 
         }
-        event.setCreateTime(LocalDateTime.now());
-        eventMapper.insert(event);
-        //事件和用户绑定
-        EventUserRelation eventUserRelation = EventUserRelation.builder()
-                .id(IdUtils.nextId())
-                .eventId(event.getId())
-                .userId(userId)
-                .createTime(LocalDateTime.now())
-                .build();
-        eventUserRelationMapper.insert(eventUserRelation);
 
 
     }

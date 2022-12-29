@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
+
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -15,6 +17,7 @@ import lombok.Data;
  */
 @TableName(value ="event_log")
 @Data
+@Builder
 public class EventLog implements Serializable {
     /**
      * 主键
