@@ -1,5 +1,6 @@
 package com.phoenix.littlelife.config;
 
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
@@ -8,7 +9,6 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.management.monitor.Monitor;
 import java.time.LocalDateTime;
 
 /**
@@ -29,8 +29,8 @@ public class RocketMQProducer {
 
             @Override
             public void onSuccess(SendResult sendResult) {
-                System.out.println(sendResult);
-                log.info("执行时间:"+LocalDateTime.now() + "{}-RocketMQProducer-asyncSend-success-" + topic + "-" + tag + "-" + msgBody);
+                log.info(JSON.toJSONString(sendResult));
+                log.info("执行时间:" + LocalDateTime.now() + "{}-RocketMQProducer-asyncSend-success-" + topic + "-" + tag + "-" + msgBody);
             }
 
             @Override

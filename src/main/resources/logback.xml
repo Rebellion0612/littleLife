@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="10 seconds">
+    <contextName>logback</contextName>
+    <!-- 格式化输出：%date表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度 %msg：日志消息，%n是换行符-->
+    <property name="LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %X{tl} [%thread] [%file:%line] - %msg%n"/>
+    <property name="LOG_PATTERN_COLOR"
+              value="%red(%d{yyyy-MM-dd HH:mm:ss}) %highlight(%-5level) %green(%X{tl}) [%thread] %boldMagenta([%file:%line]) - %cyan(%msg%n)"/>
+    <!-- 定义日志存储的路径，不要配置相对路径 -->
+    <property name="FILE_PATH" value="/www/logs/littleLife/littleLife.log"/>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- 日志级别过滤INFO以下 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>debug</level>
+        </filter>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!-- 按照上面配置的LOG_PATTERN来打印日志 -->
+            <pattern>${LOG_PATTERN_COLOR}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="fileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${FILE_PATH}</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${FILE_PATH}.%d{yyyy-MM-dd}</FileNamePattern>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="console"/>
+        <appender-ref ref="fileAppender"/>
+    </root>
+    <!-- 本地开发环境 -->
+<!--    <springProfile name="">-->
+<!--        <root level="info">-->
+<!--            <appender-ref ref="console"/>-->
+<!--        </root>-->
+<!--    </springProfile>-->
+
+<!--    <springProfile name="test,pre,prod">-->
+<!--        <root level="INFO">-->
+<!--            <appender-ref ref="ASYNC_FILEOUT"/>-->
+<!--        </root>-->
+<!--    </springProfile>-->
+
+
+</configuration>
