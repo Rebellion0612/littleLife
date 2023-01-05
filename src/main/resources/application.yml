@@ -27,3 +27,13 @@ rocketmq:
   producer:
     group: my-group
     send-message-timeout: 3000 # 发送消息超时时间，单位：毫秒。默认为 3000
+
+token:
+  # token 值
+  value: littlelife123
+  # 令牌自定义标识
+  header: Authorization
+  # 令牌秘钥
+  secret: abcdefghijklmnopqrstuvwxyz
+  # 令牌有效期（默认30分钟）
+  expireTime: 30

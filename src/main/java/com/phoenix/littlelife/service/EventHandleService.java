@@ -12,6 +12,9 @@ public interface EventHandleService {
      */
     void schedulePushMessage(String message);
 
+    /**
+     *消息推送
+     */
     void eventCheck();
 
 }

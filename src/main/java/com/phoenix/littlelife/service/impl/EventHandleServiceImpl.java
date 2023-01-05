@@ -1,7 +1,6 @@
 package com.phoenix.littlelife.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.phoenix.littlelife.config.RocketMQProducer;
 import com.phoenix.littlelife.constant.RocketConstant;
@@ -14,17 +13,14 @@ import com.phoenix.littlelife.repository.mapper.EventLogMapper;
 import com.phoenix.littlelife.repository.mapper.EventMapper;
 import com.phoenix.littlelife.repository.mapper.EventUserRelationMapper;
 import com.phoenix.littlelife.service.EventHandleService;
-import com.phoenix.littlelife.utils.GetDelayTime;
+import com.phoenix.littlelife.utils.DelayTimeUtil;
 import com.phoenix.littlelife.utils.IdUtils;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.*;
@@ -86,46 +82,28 @@ public class EventHandleServiceImpl implements EventHandleService {
         // TODO: 2022/12/28 轮训要执行的时间，并发送对应的mq消息
         //查询当天需要提醒的日程
         List<Event> schedules = eventMapper.selectList(Wrappers.lambdaQuery(Event.class)
-                .ge(Event::getStartTime, LocalDateTime.now().plusMinutes(1))
-                .lt(Event::getStartTime, LocalDateTime.now().plusMinutes(5)));
-        //创建线程池
-        ExecutorService pool = new ThreadPoolExecutor(
-                3,
-                Math.max(3, schedules.size()),
-                6, TimeUnit.SECONDS,
-                //任务队列
-                new ArrayBlockingQueue<>(5),
-                Executors.defaultThreadFactory(),
-                new ThreadPoolExecutor.AbortPolicy());
+                .ge(Event::getStartTime, LocalDateTime.now().plusMinutes(2))
+                .lt(Event::getStartTime, LocalDateTime.now().plusMinutes(10)));
+
+        schedules.forEach(event -> {
+
+            EventPushParam eventPushParam = EventPushParam.builder()
+                    .eventId(event.getId())
+                    .pushType(PushType.start.ordinal())
+                    .build();
+            Integer delayLevel = DelayTimeUtil.computeDelayLevel(event.getStartTime());
+            log.info("延时等级:{},当前时间:{},目标时间:{}",delayLevel,LocalDateTime.now(),event.getStartTime());
+
+            //发送消息提醒
+            rocketMQProducer.sendDelayMsg(
+                    RocketConstant.TOPIC_SCHEDULE_REMINDER,
+                    null,
+                    JSON.toJSONString(eventPushParam),
+                    3000,
+                    delayLevel);
+        });
 
 
-        if (schedules.size() > 0) {
-            schedules.forEach(event -> {
-                long delayTime = GetDelayTime.delayMillis(event.getStartTime());
-                log.info(event.toString());
-                EventPushParam eventPushParam = EventPushParam.builder()
-                        .eventId(event.getId())
-                        .pushType(PushType.start.ordinal())
-                        .build();
-
-                try {
-                    Thread.sleep(delayTime);
-                    pool.execute(() -> {
-                        rocketMQProducer.sendDelayMsg(
-                                RocketConstant.TOPIC_SCHEDULE_REMINDER,
-                                null,
-                                JSON.toJSONString(eventPushParam),
-                                3000,
-                                RocketConstant.DELAY_LEVEL);
-                    });
-                } catch (Exception e) {
-                    log.error(String.valueOf(event), e);
-                }
-            });
-        }
-
-
-    }
-
+    };
 
 }

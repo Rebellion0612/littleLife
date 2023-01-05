@@ -8,6 +8,7 @@ import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 
 /**
  * @author liyangyang
@@ -28,6 +29,7 @@ public class SyncToScheduleReminderConsumer implements RocketMQListener<String> 
         try {
             //执行推送行程
             eventHandleService.schedulePushMessage(msg);
+            log.info("{}-消费一次{}", LocalDateTime.now(),msg);
         }catch (Exception e){
             log.error(msg,e);
         }

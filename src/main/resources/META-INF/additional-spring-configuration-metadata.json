@@ -4,5 +4,10 @@
       "name": "rocketmq.producer.topic",
       "type": "java.lang.String",
       "description": "Description for rocketmq.producer.topic."
-  }
-] }
+    },
+    {
+      "name": "token.value",
+      "type": "java.lang.String",
+      "description": "Description for token.value."
+    }
+  ] }

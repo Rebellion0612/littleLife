@@ -22,7 +22,7 @@ public class RocketMQProducer {
     private RocketMQTemplate rocketMqTemplate;
 
     /**
-     * 发生延时消息  延时等级:"1s 5s 10s 30s 1m 2m 3m 4m 5m 6m 7m 8m 9m 10m 20m 30m 1h 2h"
+     * 发送延时消息
      */
     public void sendDelayMsg(String topic, String tag, String msgBody, long timeout, Integer delayLevel) {
         rocketMqTemplate.asyncSend(topic, MessageBuilder.withPayload(msgBody).build(), new SendCallback() {
@@ -30,7 +30,7 @@ public class RocketMQProducer {
             @Override
             public void onSuccess(SendResult sendResult) {
                 log.info(JSON.toJSONString(sendResult));
-                log.info("执行时间:" + LocalDateTime.now() + "{}-RocketMQProducer-asyncSend-success-" + topic + "-" + tag + "-" + msgBody);
+                log.info("执行时间:{}-RocketMQProducer-asyncSend-success-{}-{}-{}", LocalDateTime.now(), topic, tag, msgBody);
             }
 
             @Override
