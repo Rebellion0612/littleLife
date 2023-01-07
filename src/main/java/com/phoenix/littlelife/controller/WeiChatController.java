@@ -1,5 +1,6 @@
 package com.phoenix.littlelife.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.phoenix.littlelife.common.ApiResult;
 import com.phoenix.littlelife.constant.Urls;
 import com.phoenix.littlelife.data.param.WeiChatParam;
@@ -23,9 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class WeiChatController {
     private final WXService wxService;
 
-    @GetMapping("/{param}")
-    public ApiResult weiChatCheck(@PathVariable("param") WeiChatParam weiChatParam) {
-
+    @GetMapping("/check")
+    public ApiResult weiChatCheck(WeiChatParam weiChatParam) {
+        log.info("接收到微信请求{}", JSON.toJSON(weiChatParam));
         if (wxService.check(weiChatParam)){
             log.info("微信接入成功");
             return ApiResult.success(weiChatParam.getEchostr());
@@ -34,6 +35,12 @@ public class WeiChatController {
             return ApiResult.fail("微信接入失败");
         }
 
+    }
+
+    @GetMapping("/test/{one}")
+    public  ApiResult weiChatTest(@PathVariable("one") Integer one){
+
+        return ApiResult.success("weixin测试");
     }
 
 

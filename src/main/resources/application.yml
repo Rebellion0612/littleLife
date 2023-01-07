@@ -12,7 +12,7 @@ spring:
 xxl:
   job:
     admin:
-      addresses: http://120.53.249.35:8081/xxl-job-admin
+      addresses: http://127.0.0.1:8081/xxl-job-admin
     accessToken: default_token
     executor:
       appname: xxl-job-littleLife

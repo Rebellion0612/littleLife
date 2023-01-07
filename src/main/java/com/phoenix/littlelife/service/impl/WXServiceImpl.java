@@ -45,9 +45,7 @@ public class WXServiceImpl implements WXService {
         //2）将三个参数字符串拼接成一个字符串进行sha1加密
         String str = strs[0] + strs[1] + strs[2];
         String mysign = Sha1Util.encode(str);
-        System.out.println("加密前：" + str);
-        System.out.println("Signature:" + weiChatParam.getSignature());
-        System.out.println("mysign:：" + mysign);
+        log.info("mysign:：" + mysign);
         //3）开发者获得加密后的字符串可与signature对比，标识该请求来源于微信
         return weiChatParam.getSignature().equals(mysign);
     }
